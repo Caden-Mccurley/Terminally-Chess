@@ -21,7 +21,6 @@ public class ChessGame {
 				if (mainBoard.isMoveValid(char1, num1, char2, num2)) {
 					mainBoard.move(char1, num1, char2, num2);
 					System.out.println("Board after move:");
-					System.out.println(mainBoard);
 					turn++;
 				}
 
@@ -38,7 +37,6 @@ public class ChessGame {
 				if (mainBoard.isMoveValid(char1, num1, char2, num2)) {
 					mainBoard.move(char1, num1, char2, num2);
 					System.out.println("Board after move:");
-					System.out.println(mainBoard);
 					turn++;
 				}
 

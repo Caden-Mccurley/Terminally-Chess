@@ -1,10 +1,9 @@
 import java.util.*;
-import java.util.Scanner;
-import java.util.Stack;
 
 public class Board {
    Piece[][] board;
-   private Stack<Piece> captureStack = new Stack<>();
+   private ArrayList<Piece> whiteCaptureArr = new ArrayList<Piece>();
+   private ArrayList<Piece> blackCaptureArr = new ArrayList<Piece>();
 
     public Board() {
         initializeBoard();
@@ -29,19 +28,24 @@ public class Board {
 		yStart = 8 - yStart;
 		yEnd = 8 - yEnd;
 		if (board[yEnd][xEnd] instanceof Piece) {
-		    addCapture(board[yEnd][xEnd]);
+            System.out.println(board[yEnd][xEnd].color);
+		    addCapture(board[yEnd][xEnd], board[yEnd][xEnd].color);
 		}
         board[yEnd][xEnd] = board[yStart][xStart];
         board[yStart][xStart] = null;
         return true;
     }
     
-    public void addCapture(Piece p) {
-        captureStack.push(p);
+    public void addCapture(Piece p, String color) {
+        if (color.equals("white")) {
+            whiteCaptureArr.add(p);
+        } else {
+            blackCaptureArr.add(p);
+        }
     }
     
-    public void printCaptures() {
-        if (captureStack.isEmpty()) {
+    public void printCaptures() { // Will re-work this to support white and black capture collection.
+    /*    if (captureStack.isEmpty()) {
             System.out.println("No captures");
             return;
         }
@@ -61,6 +65,8 @@ public class Board {
         while (!temp.isEmpty()) {
             captureStack.push(temp.pop());
         }
+
+     */
     }
     
     public boolean isMoveValid(char xStartChar, int yStart, char xEndChar, int yEnd) {
@@ -68,19 +74,25 @@ public class Board {
         int xEnd = xEndChar - 'a';
 		yStart = 8 - yStart;
 		yEnd = 8 - yEnd;
-		Piece obj = board[yStart][xStart];
-		char bound1 = '`';
-		char bound2 = 'i';
-	    if (xStartChar > bound1 && xEndChar < bound2 && yStart >= 1 && yStart <= 8) {
-            if (obj.isValidPath(xStart, yStart, xEnd, yEnd)) {
-				return true;
-			} else {
+		Piece startingPiece = board[yStart][xStart];
+        Piece endingPiece = board[yEnd][xEnd];
+	    if (xEnd < 0 || xEnd > 7 || yEnd < 0 || yEnd > 7) {
+            System.out.println("Move out of bounds.");
+            return false;
+        } else if (xStart == xEnd && yStart == yEnd) {
+            System.out.println("Move has same starting and ending position.");
+            return false;
+        } else if (endingPiece != null && startingPiece.color.equals(endingPiece.color)) {
+            System.out.println("Move attempts to capture piece of same color.");
+            return false;
+        } else {
+            if (startingPiece.isValidPath(xStart, yStart, xEnd, yEnd)) {
+                return true;
+            } else {
                 System.out.println("Invalid path");
                 return false;
             }
         }
-        System.out.println("Move out of bounds");
-        return false;
     }
 
 	public String toString() {

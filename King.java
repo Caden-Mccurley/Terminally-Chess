@@ -4,7 +4,10 @@ class King extends Piece {
     }
 
 	public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd) {
-		return false;
+		if (Math.abs(xStart - xEnd) == 1 || Math.abs(yStart - yEnd) == 1){
+            return true;
+        };
+        return false;
 	}
 
     @Override

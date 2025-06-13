@@ -4,6 +4,11 @@ class Queen extends Piece {
     }
 
     public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd) {
+        if (Math.abs(xEnd - xStart) == Math.abs(yEnd - yStart) && xStart != xEnd) {
+            return true;
+        } else if (xStart == xEnd || yStart == yEnd) {
+            return true;
+        }
         return false;
     }
 

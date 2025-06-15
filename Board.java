@@ -1,9 +1,10 @@
 import java.util.*;
+import java.lang.reflect.Constructor;
 
 public class Board {
    Piece[][] board;
-   private ArrayList<Piece> whiteCaptureArr = new ArrayList<Piece>();
-   private ArrayList<Piece> blackCaptureArr = new ArrayList<Piece>();
+   public ArrayList<Piece> whiteCaptureArr = new ArrayList<Piece>();
+   public ArrayList<Piece> blackCaptureArr = new ArrayList<Piece>();
 
     public Board() {
         initializeBoard();
@@ -21,8 +22,16 @@ public class Board {
             {new Rook("white"), new Knight("white"), new Bishop("white"), new Queen("white"), new King("white"), new Bishop("white"), new Knight("white"), new Rook("white")}
         };
     }
-	
-	public boolean move(char xStartChar, int yStart, char xEndChar, int yEnd) {
+
+    private static final Map<String, Class<? extends Piece>> promotionMap = new HashMap<>();
+    static {
+        promotionMap.put("queen", Queen.class);
+        promotionMap.put("rook", Rook.class);
+        promotionMap.put("bishop", Bishop.class);
+        promotionMap.put("knight", Knight.class);
+    }
+
+    public boolean move(char xStartChar, int yStart, char xEndChar, int yEnd, Scanner scanner) {
 		int xStart = xStartChar - 'a';
         int xEnd = xEndChar - 'a';
 		yStart = 8 - yStart;
@@ -32,8 +41,38 @@ public class Board {
 		}
         board[yEnd][xEnd] = board[yStart][xStart];
         board[yStart][xStart] = null;
+        if (board[yEnd][xEnd] instanceof Pawn) {
+            if ((board[yEnd][xEnd].color.equals("black") && yEnd == 7) ||
+                    (board[yEnd][xEnd].color.equals("white") && yEnd == 0)) {
+
+                String pieceColor = board[yEnd][xEnd].color; // Store color before pawn is replaced
+                String promotionChoice = "";
+
+                // Loop until user enters a valid choice from the map keys
+                while (!promotionMap.containsKey(promotionChoice)) {
+                    System.out.println("Enter piece to promote pawn to (Queen, Bishop, Knight, Rook): ");
+                    promotionChoice = scanner.next().toLowerCase();
+                    if (!promotionMap.containsKey(promotionChoice)) {
+                        System.out.println("Invalid choice. Please try again.");
+                    }
+                }
+
+                try {
+                    // Create a new piece of the chosen class
+                    Class<? extends Piece> promotedPieceClass = promotionMap.get(promotionChoice);
+                    Constructor<? extends Piece> constructor = promotedPieceClass.getConstructor(String.class);
+                    board[yEnd][xEnd] = constructor.newInstance(pieceColor); // Overwrite the pawn
+                } catch (Exception e) {
+                    // If it fails, default to a Queen
+                    e.printStackTrace();
+                    board[yEnd][xEnd] = new Queen(pieceColor);
+                }
+            }
+        }
         return true;
     }
+
+
     
     public void addCapture(Piece p, String color) {
         if (color.equals("white")) {
@@ -43,49 +82,31 @@ public class Board {
         }
     }
     
-    public void printCaptures() { // Will re-work this to support white and black capture collection.
-    /*    if (captureStack.isEmpty()) {
-            System.out.println("No captures");
-            return;
-        }
-        
-        System.out.print("Captures: ");
-        Stack<Piece> temp = new Stack<>();
-        
-        while(!captureStack.isEmpty()) {
-            Piece p = captureStack.pop();
-            System.out.print(p + " ");
-            temp.push(p);
-        }
-        
-        System.out.println();
-        
-        //restore original stack
-        while (!temp.isEmpty()) {
-            captureStack.push(temp.pop());
-        }
-
-     */
-    }
-    
-    public boolean isMoveValid(char xStartChar, int yStart, char xEndChar, int yEnd) {
+    public boolean isMoveValid(char xStartChar, int yStart, char xEndChar, int yEnd, int turn) {
         int xStart = xStartChar - 'a';
         int xEnd = xEndChar - 'a';
 		yStart = 8 - yStart;
 		yEnd = 8 - yEnd;
 		Piece startingPiece = board[yStart][xStart];
         Piece endingPiece = board[yEnd][xEnd];
+        if (startingPiece == null) {
+            System.out.println("Cannot move non-existent piece.");
+            return false;
+        }
+        if (startingPiece.color.equals("white") && turn % 2 == 1 || startingPiece.color.equals("black") && turn % 2 == 0) {
+            System.out.println("You cannot move piece of opposite color.");
+            return false;
+        }
 	    if (xEnd < 0 || xEnd > 7 || yEnd < 0 || yEnd > 7) {
             System.out.println("Move out of bounds.");
             return false;
-        } else if (xStart == xEnd && yStart == yEnd) {
+        }
+        if (xStart == xEnd && yStart == yEnd) {
             System.out.println("Move cannot have same starting and end position.");
             return false;
-        } else if (endingPiece != null && startingPiece.color.equals(endingPiece.color)) {
+        }
+        if (endingPiece != null && startingPiece.color.equals(endingPiece.color)) {
             System.out.println("You cannot capture a same-color piece.");
-            return false;
-        } else if (startingPiece == null) {
-            System.out.println("Cannot move non-existent piece.");
             return false;
         } else {
             if (startingPiece.isValidPath(xStart, yStart, xEnd, yEnd, endingPiece)) {

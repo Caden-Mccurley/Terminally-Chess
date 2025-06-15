@@ -9,7 +9,7 @@ class Piece {
         this.color = color;
     }
 
-	public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd) {
+	public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd, Piece endPiece) {
 		return false;
 	}
 

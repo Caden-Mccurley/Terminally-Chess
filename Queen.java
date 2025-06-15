@@ -3,7 +3,7 @@ class Queen extends Piece {
         super(color);
     }
 
-    public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd) {
+    public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd, Piece endPiece) {
         if (Math.abs(xEnd - xStart) == Math.abs(yEnd - yStart) && xStart != xEnd) {
             return true;
         } else if (xStart == xEnd || yStart == yEnd) {

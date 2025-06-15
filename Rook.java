@@ -3,7 +3,7 @@ class Rook extends Piece {
         super(color);
     }
 
-	public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd) {
+	public boolean isValidPath(int xStart, int yStart, int xEnd, int yEnd, Piece endPiece) {
 		if (xStart == xEnd || yStart == yEnd) {
             return true;
         }

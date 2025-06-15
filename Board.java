@@ -28,7 +28,6 @@ public class Board {
 		yStart = 8 - yStart;
 		yEnd = 8 - yEnd;
 		if (board[yEnd][xEnd] instanceof Piece) {
-            System.out.println(board[yEnd][xEnd].color);
 		    addCapture(board[yEnd][xEnd], board[yEnd][xEnd].color);
 		}
         board[yEnd][xEnd] = board[yStart][xStart];
@@ -80,14 +79,40 @@ public class Board {
             System.out.println("Move out of bounds.");
             return false;
         } else if (xStart == xEnd && yStart == yEnd) {
-            System.out.println("Move has same starting and ending position.");
+            System.out.println("Move cannot have same starting and end position.");
             return false;
         } else if (endingPiece != null && startingPiece.color.equals(endingPiece.color)) {
-            System.out.println("Move attempts to capture piece of same color.");
+            System.out.println("You cannot capture a same-color piece.");
+            return false;
+        } else if (startingPiece == null) {
+            System.out.println("Cannot move non-existent piece.");
             return false;
         } else {
-            if (startingPiece.isValidPath(xStart, yStart, xEnd, yEnd)) {
-                return true;
+            if (startingPiece.isValidPath(xStart, yStart, xEnd, yEnd, endingPiece)) {
+                if (startingPiece instanceof Rook || startingPiece instanceof Bishop || startingPiece instanceof Queen || startingPiece instanceof Pawn) { // Rooks, Bishops, and Queens can have collisions in their paths (and Pawns when moving forward by two), so this code checks each square along the path for collisions.
+                    // Find the direction that x and y take. This includes a 'magnitude' that we get rid of next.
+                    int dx = xEnd - xStart;
+                    int dy = yEnd - yStart;
+                    // Creates a step variable that represents the step the path takes on x and y. This can either be 1, -1, or 0 for x and y.
+                    int stepX = (dx == 0) ? 0 : (dx / Math.abs(dx));
+                    int stepY = (dy == 0) ? 0 : (dy / Math.abs(dy));
+                    // Sets the starting position to check for collisions as one step forward from starting position (otherwise the piece would collide on itself).
+                    int currentX = xStart + stepX;
+                    int currentY = yStart + stepY;
+                    // Increments by one step on currentX and currentY (a step of 1, -1, or 0) until either the ending position is reached, or a piece is found, meaning there is a collision.
+                    // Imagine a Rook going up 5 squares, with a Pawn directly before the final square it wants to end, an illegal move. We would find the direction of Y, which is 5, and the direction of X, which is 0.
+                    // Then we would break this down into a step of 1 for Y, and a step of 0 for X. We step and check each piece along this path until we reach step 4, where our Pawn is, and throw a collision detection.
+                    while (currentX != xEnd || currentY != yEnd) {
+                        if (board[currentY][currentX] != null) {
+                            System.out.println("Path blocked by other pieces.");
+                            return false;
+                        }
+                        currentX += stepX;
+                        currentY += stepY;
+                    }
+                }
+
+                     return true;
             } else {
                 System.out.println("Invalid path");
                 return false;

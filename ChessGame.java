@@ -12,8 +12,8 @@ public class ChessGame {
 			System.out.println("Black's Captured Pieces: " + mainBoard.whiteCaptureArr);
 			System.out.println(mainBoard);
 			System.out.println("White's Captured Pieces: " + mainBoard.blackCaptureArr);
-			if (turn % 2 == 0) { // We will assume that even turns are white, and odd turns are black.
-				System.out.println("Player 1: Enter your move (format: a 2 b 3):");
+			// We will assume that even turns are white, and odd turns are black.
+			System.out.println("Player " + (turn % 2 + 1) + ": Enter your move (format: a 2 b 3):");
 
 				char char1 = keyboard.next().charAt(0);
 				int num1 = keyboard.nextInt();
@@ -24,23 +24,7 @@ public class ChessGame {
 					mainBoard.move(char1, num1, char2, num2, keyboard);
 					System.out.println("Board after move:");
 					turn++;
-				}
 
-
-			}
-			else {
-				System.out.println("Player 2: Enter your move (format: a 2 b 3):");
-
-				char char1 = keyboard.next().charAt(0);
-				int num1 = keyboard.nextInt();
-				char char2 = keyboard.next().charAt(0);
-				int num2 = keyboard.nextInt();
-
-				if (mainBoard.isMoveValid(char1, num1, char2, num2, turn)) {
-					mainBoard.move(char1, num1, char2, num2, keyboard);
-					System.out.println("Board after move:");
-					turn++;
-				}
 
 
 			}

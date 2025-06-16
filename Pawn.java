@@ -7,7 +7,6 @@ class Pawn extends Piece {
         if (this.color.equals("white")) {
             // Standard one-square forward for white pawn
             if (xStart == xEnd && yStart - yEnd == 1 && endPiece == null) {
-                System.out.println("Standard one-square move");
                 return true;
             }
             // Special diagonal capture
@@ -21,7 +20,6 @@ class Pawn extends Piece {
         } else if (this.color.equals("black")) {
             // Standard one-square forward for black pawn
             if (xStart == xEnd && yEnd - yStart == 1 && endPiece == null) {
-                System.out.println("Standard one-square move");
                 return true;
             }
             // Special diagonal capture
